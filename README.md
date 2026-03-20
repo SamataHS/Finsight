@@ -2,27 +2,6 @@
 
 > A full-stack financial management platform with automatic transaction categorization, AI-powered insights, email automation, and comprehensive financial analytics.
 
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)](#)
-[![Node.js](https://img.shields.io/badge/Node.js-16+-green)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-6+-green)](https://www.mongodb.com/)
-[![React](https://img.shields.io/badge/React-18+-blue)](https://react.dev/)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](#)
-
----
-
-## Table of Contents
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Prerequisites](#-prerequisites)
-- [Installation & Setup](#-installation--setup)
-- [Environment Variables](#-environment-variables)
-- [Running the Project](#-running-the-project)
-- [API Endpoints](#-api-endpoints)
-- [Usage Guide](#-usage-guide)
-- [Database Schema](#-database-schema)
-- [Troubleshooting](#-troubleshooting)
-
----
 
 ## ✨ Features
 
@@ -529,26 +508,6 @@ curl -X POST http://localhost:3002/api/auth/login \
   }'
 ```
 
----
-
-## 🚀 Deployment
-
-### **Backend**
-- Heroku, Railway, Render, Vercel
-- AWS EC2, Elastic Beanstalk
-- DigitalOcean
-
-### **Frontend**
-- Vercel (recommended)
-- Netlify
-- GitHub Pages
-
-### **Database**
-- MongoDB Atlas
-- Self-hosted MongoDB
-
----
-
 ## 📊 Categories Supported
 
 🍽️ Food & Dining | 🏠 Rent | 💡 Utilities | 🚗 Transport | 🛍️ Shopping | 🎬 Entertainment | ✈️ Travel | 🏥 Healthcare | 📚 Education | 💼 Investments | 💰 Salary | 💻 Freelance | 📌 Other
@@ -577,6 +536,5 @@ MIT License
 
 ---
 
-**Built with ❤️ for better financial management**
 
-*Last Updated: March 2026*
+
