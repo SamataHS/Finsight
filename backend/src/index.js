@@ -23,16 +23,36 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+/* ================================
+   ✅ FIXED CORS (PRODUCTION SAFE)
+================================ */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://finsi.netlify.app"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
 app.use(express.json());
 
-// ✅ PUBLIC: Test email endpoint (no authentication required)
+/* ================================
+   EMAIL TEST ROUTE
+================================ */
 app.get("/api/notifications/test-email-simple", async (req, res) => {
   try {
     const { email } = req.query;
@@ -41,55 +61,46 @@ app.get("/api/notifications/test-email-simple", async (req, res) => {
       return res.status(400).json({
         success: false,
         error: "Email parameter required",
-        message: "Usage: /api/notifications/test-email-simple?email=your@email.com",
       });
     }
 
-    // Verify SMTP is configured
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
       return res.status(400).json({
         success: false,
         error: "SMTP not configured",
-        details: "Check your .env file for SMTP settings",
       });
     }
 
-    // Send a simple test email
     const htmlContent = `
       <html>
-        <body style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
-          <h2 style="color: #22c55e;">✅ Finsight Email Test Successful</h2>
-          <p>Hello,</p>
-          <p>This email confirms that your Finsight email service is working correctly!</p>
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            <p><strong>Email Address:</strong> ${email}</p>
-            <p><strong>Status:</strong> ✓ Connected and working</p>
-            <p><strong>Test Time:</strong> ${new Date().toLocaleString()}</p>
-          </div>
-          <p>You will receive monthly financial reports automatically on the 1st of each month.</p>
-          <a href="https://finsight.local/profile" style="color: #22c55e; text-decoration: none; font-weight: bold;">Go to Finsight →</a>
+        <body style="font-family: Arial; padding: 20px;">
+          <h2 style="color: green;">✅ Finsight Email Test Successful</h2>
+          <p>Email: ${email}</p>
+          <p>Status: Working fine 🚀</p>
+          <p>Time: ${new Date().toLocaleString()}</p>
         </body>
       </html>
     `;
 
-    const result = await sendEmail(email, "✅ Finsight Email Test - Success", htmlContent);
+    await sendEmail(email, "Finsight Email Test", htmlContent);
 
     res.json({
       success: true,
-      message: "Test email sent successfully!",
-      email: email,
-      timestamp: new Date().toISOString(),
+      message: "Email sent successfully",
     });
-  } catch (e) {
-    console.error("SIMPLE EMAIL TEST ERROR:", e);
+
+  } catch (err) {
+    console.error(err);
     res.status(500).json({
       success: false,
-      error: "Failed to send test email",
-      message: e.message,
+      error: "Email failed",
     });
   }
 });
 
+/* ================================
+   ROUTES
+================================ */
 app.use("/api/auth", authRouter);
 app.use("/api/transactions", transactionRouter);
 app.use("/api/budgets", budgetRouter);
@@ -102,23 +113,30 @@ app.use("/api/uploads", uploadRouter);
 app.use("/api/simulator", simulatorRouter);
 app.use("/api/notifications", notificationRouter);
 
+/* ================================
+   HEALTH CHECK
+================================ */
 app.get("/api/health", (_, res) => {
   res.json({
     status: "ok",
-    message: "API running",
+    message: "API running 🚀",
   });
 });
 
+/* ================================
+   START SERVER
+================================ */
 async function main() {
   try {
     await connectMongo();
+    console.log("MongoDB connected");
 
-    // Start monthly email scheduler
     startMonthlyEmailScheduler();
 
     app.listen(PORT, () => {
-      console.log(`🚀 Finsight API running at http://localhost:${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
+
   } catch (err) {
     console.error("Mongo connection failed", err);
   }
